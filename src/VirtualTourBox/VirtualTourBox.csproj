@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>VirtualTourBox</AssemblyName>
+    <ApplicationIcon>Tray.ico</ApplicationIcon>
+    <Version>0.2.5</Version>
+    <RootNamespace>VirtualTourBox</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Defaults/*.json" CopyToOutputDirectory="PreserveNewest"/>
+    <Resource Include="Tray.ico" />
+    <EmbeddedResource Include="Tray.ico" LogicalName="VirtualTourBox.Tray.ico" />
+  </ItemGroup>
+</Project>
+
+
+

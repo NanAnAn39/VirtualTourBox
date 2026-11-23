@@ -1,0 +1,179 @@
+<Window x:Class="VirtualTourBox.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Virtual TourBox V0.2.5" Icon="Tray.ico" Height="880" Width="1380" MinHeight="700" MinWidth="1080"
+ Background="{StaticResource BackgroundBrush}" FontFamily="Microsoft YaHei UI" FontSize="16"
+ Loaded="Window_Loaded" Closing="Window_Closing">
+ <Grid Margin="28,20,28,12" Background="{StaticResource BackgroundBrush}">
+  <Grid.RowDefinitions><RowDefinition Height="76"/><RowDefinition Height="0"/><RowDefinition Height="*"/><RowDefinition Height="56"/></Grid.RowDefinitions>
+  <Grid Margin="0,0,0,18"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Viewbox Width="34" Height="30" Margin="0,0,14,0"><Canvas Width="40" Height="32"><Path Data="M 10,7 C 5,6 4,10 3,16 L 1,26 C 0,32 5,33 9,29 L 15,23 L 25,23 L 31,29 C 35,33 40,32 39,26 L 37,16 C 36,10 35,6 30,7 Z M 9,14 L 9,22 M 5,18 L 13,18 M 28,14 L 28,16 M 32,19 L 32,21" Stroke="#25272A" StrokeThickness="2" Fill="Transparent" StrokeLineJoin="Round"/></Canvas></Viewbox><TextBlock Text="Virtual TourBox" FontSize="27" FontWeight="SemiBold" VerticalAlignment="Center"/></StackPanel>
+   <ComboBox Grid.Column="1" x:Name="ProfileCombo" Width="270" FontSize="21" HorizontalAlignment="Left" Margin="92,0" VerticalAlignment="Center" SelectionChanged="ProfileCombo_SelectionChanged"/>
+   <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"><TextBlock x:Name="CompactConnection" Text="iPad · 未连接" Foreground="#65717C" VerticalAlignment="Center" Margin="0,0,24,0"/><Button x:Name="ToggleButton" Content="启动映射" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Click="ToggleButton_Click" Width="118" Height="42">
+    <Button.Template><ControlTemplate TargetType="Button"><StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+     <Border x:Name="SwitchTrack" Width="50" Height="28" CornerRadius="14" Background="#CDD2D7"><Ellipse x:Name="SwitchThumb" Width="22" Height="22" Fill="White" HorizontalAlignment="Left" Margin="3"/></Border>
+     <TextBlock Text="启用" FontSize="18" Foreground="#353A3D" Margin="12,0,0,0" VerticalAlignment="Center"/>
+    </StackPanel><ControlTemplate.Triggers><Trigger Property="Content" Value="暂停映射"><Setter TargetName="SwitchTrack" Property="Background" Value="#5278A0"/><Setter TargetName="SwitchThumb" Property="HorizontalAlignment" Value="Right"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+   </Button><Button Content="⚙" FontSize="22" Click="ShowSettings_Click" Margin="16,0,0,0" Background="Transparent" Foreground="#25272A"/></StackPanel>
+  </Grid>
+  <ComboBox Grid.Row="2" Panel.ZIndex="2" x:Name="ControllerLayoutCombo" Width="170" Height="38" VerticalAlignment="Top" HorizontalAlignment="Right" SelectionChanged="ControllerLayout_Changed"><ComboBoxItem Content="Nintendo"/><ComboBoxItem Content="Xbox"/><ComboBoxItem Content="PlayStation"/></ComboBox>
+  <Border Grid.Row="2" BorderBrush="#DADDDD" BorderThickness="0,1,0,0" Margin="0,-12,0,0" IsHitTestVisible="False"/>
+  <TabControl x:Name="WorkspaceTabs" Grid.Row="2" Background="Transparent" BorderThickness="0">
+   <TabItem Header="按键">
+    <Grid Margin="0,15,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="410"/></Grid.ColumnDefinitions>
+     <Grid Margin="0,0,20,0"><Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <Viewbox Stretch="Uniform"><Canvas x:Name="ControllerCanvas" Width="1040" Height="740"/></Viewbox>
+      <TextBlock Grid.Row="1" Text="{Binding ElementName=InputStatus, Path=Text, StringFormat=最近输入  ·  {0}}" FontSize="14" HorizontalAlignment="Center" Foreground="#61758A" Margin="0,12" TextWrapping="Wrap"/>
+     </Grid>
+     <Border Grid.Column="1" BorderBrush="#DFE2E2" BorderThickness="1,0,0,0" Padding="22,0,0,0">
+      <DockPanel><StackPanel x:Name="InspectorActions" DockPanel.Dock="Bottom" Margin="0,0,0,25"/><ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel x:Name="InspectorPanel"><TextBlock Text="选择一个按键" FontSize="22" Margin="0,20"/><TextBlock Text="点击手柄或旁边的功能名称进行修改" TextWrapping="Wrap" Foreground="#69717A"/></StackPanel></ScrollViewer></DockPanel>
+     </Border>
+    </Grid>
+   </TabItem>
+   <TabItem Header="组合键"><DockPanel Margin="0,14,0,0"><StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12"><Button Content="保存配置" Click="SaveProfile_Click"/><Button Content="恢复默认映射" Click="ResetMapping_Click" Margin="8,0"/></StackPanel>
+                    <ScrollViewer x:Name="MappingScroll" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="BindingsList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,4"><Grid.ColumnDefinitions><ColumnDefinition Width="100"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <Border Background="#F4F6F9" CornerRadius="8" Padding="10,7" Margin="0,0,9,0"><TextBlock Text="{Binding DisplayInput}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#364152"/></Border>
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.ActionOptions, RelativeSource={RelativeSource AncestorType=Window}}" SelectedValuePath="Key" DisplayMemberPath="Value" SelectedValue="{Binding Action, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0"/>
+                                        <TextBox Grid.Column="2" Width="135" Text="{Binding Shortcut, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 IsReadOnly="True" Cursor="Hand" Focusable="True"
+                                                 InputMethod.IsInputMethodEnabled="False"
+                                                 GotKeyboardFocus="ShortcutRecorder_GotKeyboardFocus"
+                                                 PreviewKeyDown="ShortcutRecorder_PreviewKeyDown"
+                                                 ToolTip="点击后按下键盘组合键；Esc 取消，Backspace/Delete 清除">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Action}" Value="CustomKey">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer></DockPanel></TabItem>
+   <TabItem Header="摇杆">
+    <Grid Margin="0,12,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+     <Border Background="White" CornerRadius="16" Padding="20" Margin="0,0,16,0">
+      <StackPanel><TextBlock Text="手柄设备" FontSize="18"/><ComboBox x:Name="DeviceCombo" SelectionChanged="DeviceCombo_SelectionChanged" Margin="0,12,0,8"/><Button Content="刷新设备" Click="RefreshDevices_Click" Margin="0,0,0,16"/>
+<WrapPanel><Button Content="新建场景" Click="NewSceneDialog_Click"/><Button Content="删除" Click="DeleteScene_Click" Margin="8,0"/><Button Content="导入" Click="ImportScene_Click"/><Button Content="导出" Click="ExportScene_Click" Margin="8,0"/></WrapPanel><TextBlock Text="连接状态" FontSize="20" FontWeight="SemiBold"/>
+       
+       <Button Content="涂抹与笔刷使用说明" Click="ToolSetup_Click" Margin="0,16,0,0"/>
+      </StackPanel>
+     </Border>
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto"><StackPanel>
+                <Border Background="White" CornerRadius="16" Padding="18" Margin="0,0,0,16">
+                    <StackPanel><TextBlock Text="输入监视器" FontSize="18" FontWeight="SemiBold"/>
+                        <TextBlock Text="实时输入" Foreground="{StaticResource SecondaryTextBrush}" FontSize="11" Margin="0,3,0,10"/>
+                        <TextBlock x:Name="InputStatus" Text="等待连接…" TextWrapping="Wrap" Foreground="#3455A7" FontWeight="SemiBold"/>
+                        <Button Content="复制手柄诊断" Click="CopyDiagnostics_Click" Background="#E9ECF5" Foreground="#314159" Margin="0,8,0,0"/>
+                        <TextBlock x:Name="AxisStatus" Margin="0,10,0,0" TextWrapping="Wrap" FontFamily="Consolas" FontSize="12" Foreground="#566476"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="White" CornerRadius="16" Padding="18" Margin="0,0,0,16">
+                    <StackPanel><TextBlock Text="输出状态" FontSize="18" FontWeight="SemiBold"/><Button Content="涂抹与笔刷设置" Click="ToolSetup_Click" Margin="0,8,0,0"/><TextBlock Text="按住涂抹需配置 Procreate 手势；液化与翻转使用快捷菜单。" TextWrapping="Wrap" FontSize="11"/>
+                        <TextBlock x:Name="OutputStatus" Text="映射未启动" Foreground="#4E5A6C" Margin="0,10,0,0" TextWrapping="Wrap"/>
+                        <TextBlock x:Name="TargetNotice" Foreground="#AF6434" FontSize="12" TextWrapping="Wrap" Margin="0,9,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="White" CornerRadius="16" Padding="18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="iPad 连接" FontSize="18" FontWeight="SemiBold"/>
+                        <TextBlock Text="使用随包服务连接 iPad。画布平移、缩放、旋转尚未实现。" TextWrapping="Wrap" Foreground="{StaticResource SecondaryTextBrush}" FontSize="11" Margin="0,4,0,9"/>
+                        <Expander Header="高级连接设置（自选 CLI）">                        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                            <TextBox x:Name="BridgePath" Grid.Column="0" IsReadOnly="True" Text="" ToolTip="选择官方 BleHid.Cli.exe"/>
+                            <Button Grid.Column="1" Content="选择" Margin="7,0,0,0" Click="SelectBridge_Click" Background="#E9ECF5" Foreground="#314159"/>
+                        </Grid>
+</Expander>
+                        <WrapPanel Margin="0,9,0,0">
+                            <Button Content="启动服务" Click="StartBridge_Click" Margin="0,0,7,7"/>
+                            <Button Content="停止" Click="StopBridge_Click" Background="#E9ECF5" Foreground="#314159" Margin="0,0,7,7"/>
+                            <Button Content="检查状态" Click="BridgeStatus_Click" Background="#E9ECF5" Foreground="#314159" Margin="0,0,7,7"/>
+                            <Button Content="选第 1 台设备" Click="SelectFirstHost_Click" Background="#E9ECF5" Foreground="#314159" Margin="0,0,7,7"/>
+                            <Button x:Name="TestIpadButton" IsEnabled="False" Content="测试字母 b" Click="TestIpadKey_Click" Background="#E9ECF5" Foreground="#314159" Margin="0,0,7,7"/>
+                        </WrapPanel>
+                        <WrapPanel Margin="0,1,0,7">
+                            <Button Content="展开完整日志" Click="ViewFullLog_Click" Background="#E9ECF5" Foreground="#314159" Margin="0,0,7,0"/>
+                            <Button Content="复制全部日志" Click="CopyBridgeLog_Click" Background="#E9ECF5" Foreground="#314159"/>
+                        </WrapPanel>
+                        <CheckBox x:Name="AutoBridgeCheckbox" Content="打开软件时自动尝试启动 BleHid（需保存路径）" Checked="AutoBridgeCheckbox_Changed" Unchecked="AutoBridgeCheckbox_Changed" Margin="0,3,0,9"/>
+                        <CheckBox Visibility="Collapsed" x:Name="AutoRestartCheckbox" Content="服务异常退出时自动重启（最多3次）" Checked="AutoRestartCheckbox_Changed" Unchecked="AutoRestartCheckbox_Changed" Margin="0,4,0,8"/><TextBlock x:Name="IpadBridgeState" Text="蓝牙桥接未运行" TextWrapping="Wrap" FontSize="12" Foreground="#A36535"/>
+                        <Expander Visibility="Collapsed" Header="单指画布实验（已搁置）" Margin="0,8">
+                            <StackPanel>
+                                <TextBlock Text="测试画布中开启单指 Move 或 Zoom，将指针放在画布内，再点击短拖动。鼠标是否可代替触控仍待验证。" TextWrapping="Wrap"/>
+                                <WrapPanel>
+                                    <Button Content="左拖" Tag="left" Click="DragProbe_Click"/>
+                                    <Button Content="右拖" Tag="right" Click="DragProbe_Click"/>
+                                    <Button Content="上拖" Tag="up" Click="DragProbe_Click"/>
+                                    <Button Content="下拖" Tag="down" Click="DragProbe_Click"/>
+                                </WrapPanel>
+                                <TextBlock Text="待实现：涂抹、液化、水平/垂直翻转的一键调用；摇杆平移/旋转、十字键缩放。当前可用快捷菜单后在 iPad 点选。" TextWrapping="Wrap" FontSize="11"/>
+                            </StackPanel>
+                        </Expander>
+                        <TextBox x:Name="IpadBridgeLog" IsReadOnly="True" TextWrapping="Wrap" FontSize="11" FontFamily="Consolas" Height="200" VerticalScrollBarVisibility="Auto" Margin="0,7,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="White" CornerRadius="16" Padding="18" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="摇杆防误触" FontSize="18" FontWeight="SemiBold"/>
+                        <TextBlock Text="左摇杆触发阈值（5%–80%）" Margin="0,10,0,0"/>
+                        <Slider x:Name="LeftDeadzone" Minimum="5" Maximum="80" Value="25" TickFrequency="5" IsSnapToTickEnabled="True"/>
+                        <TextBlock Text="{Binding ElementName=LeftDeadzone, Path=Value, StringFormat={}{0:0}%}"/>
+                        <TextBlock Text="右摇杆触发阈值（5%–80%）"/>
+                        <Slider x:Name="RightDeadzone" Minimum="5" Maximum="80" Value="25" TickFrequency="5" IsSnapToTickEnabled="True"/>
+                        <TextBlock Text="{Binding ElementName=RightDeadzone, Path=Value, StringFormat={}{0:0}%}"/>
+                        <TextBlock x:Name="StickPreview" Text="等待手柄" TextWrapping="Wrap" Margin="0,8"/>
+                        <Button Content="高级设备校准" Click="AdvancedCalibration_Click" Margin="0,8"/><Button Content="保存摇杆设置" Click="SaveCalibration_Click"/>
+                        <Button Content="松开双摇杆后，点击校准中心" Click="CenterCalibration_Click" Margin="0,8,0,0"/>
+                        <TextBlock Text="按压摇杆时抑制位移，松开后回中恢复；越过阈值需稳定约150毫秒。右摇杆 WinMM 默认使用 U/R 轴。平移与旋转仍待实现；可绑定自定义键测试触发。" TextWrapping="Wrap" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="White" CornerRadius="16" Padding="18">
+                    <StackPanel><TextBlock Text="配置与运行" FontSize="18" FontWeight="SemiBold"/>
+                        <Button Content="备份全部配置" Click="ExportConfiguration_Click" Margin="0,8"/>
+                        <Button Content="恢复配置备份" Click="RestoreConfiguration_Click" Margin="0,0,0,8"/>
+                        <Button Content="打开配置文件夹" Click="OpenFolder_Click" Margin="0,0,0,8"/>
+                        <StackPanel Visibility="Collapsed">
+                          <TextBox x:Name="NewProfileName"/>
+                          <ComboBox x:Name="NewTarget" SelectedIndex="0">
+                            <ComboBoxItem Content="Windows" Tag="Windows"/>
+                            <ComboBoxItem Content="iPad" Tag="iPad"/>
+                            <ComboBoxItem Content="原生游戏" Tag="Game"/>
+                          </ComboBox>
+                        </StackPanel>
+                        <Button Content="转入后台" Click="Background_Click" Margin="0,8,0,0"/><TextBlock Text="右上角 × 彻底退出；转入后台继续映射。" TextWrapping="Wrap" FontSize="11"/><TextBlock Text="首次连发等待（100–2000毫秒）"/>
+                        <Slider x:Name="RepeatDelay" Minimum="100" Maximum="2000" TickFrequency="50" IsSnapToTickEnabled="True"/>
+                        <TextBlock Text="{Binding ElementName=RepeatDelay, Path=Value, StringFormat={}{0:0} 毫秒}"/>
+                        <TextBlock Text="连发间隔（50–1000毫秒，含笔刷增减）"/>
+                        <Slider x:Name="RepeatInterval" Minimum="50" Maximum="1000" TickFrequency="25" IsSnapToTickEnabled="True"/>
+                        <TextBlock Text="{Binding ElementName=RepeatInterval, Path=Value, StringFormat={}{0:0} 毫秒}"/>
+                        <Button Content="保存连发设置" Click="RepeatSettings_Click"/>
+                        <TextBlock Text="运行设置" FontWeight="SemiBold" Margin="0,13,0,6"/>
+                        <CheckBox x:Name="TrayCheckbox" Visibility="Collapsed" />
+                        <CheckBox x:Name="StartupCheckbox" Content="Windows 登录时自动启动" Checked="StartupCheckbox_Changed" Unchecked="StartupCheckbox_Changed" Margin="0,4,0,4"/>
+                        <TextBlock Text="后台可从托盘恢复；图标不可用时保留任务栏入口。" Foreground="#6D7785" FontSize="11"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel></ScrollViewer>
+    </Grid>
+   </TabItem>
+  </TabControl>
+  <Border Grid.Row="3" BorderBrush="#DADDDD" BorderThickness="0,1,0,0" IsHitTestVisible="False"/>
+  <Grid Grid.Row="3" Margin="0,10,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Button Content="☷  场景管理" Click="SceneMenu_Click" Background="Transparent" Foreground="#353A3D" BorderBrush="#CDD1D4" BorderThickness="1" Padding="14,8"/>
+   <TextBlock Grid.Column="1" Text="{Binding ElementName=ProfileCombo, Path=SelectedItem}" VerticalAlignment="Center" Margin="20,0"/>
+   <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"><TextBlock FontSize="13" Text="{Binding ElementName=IpadBridgeState, Path=Text}" MaxWidth="300" TextTrimming="CharacterEllipsis" Foreground="#69717A" VerticalAlignment="Center"/><Button Content="设备与设置  ﹀" Click="ShowSettings_Click" Background="Transparent" Foreground="#353A3D" Margin="16,0,0,0"/></StackPanel>
+  </Grid>
+  <Border x:Name="ToastBox" Grid.RowSpan="4" Background="#242629" CornerRadius="12" Padding="20,12" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,40" Visibility="Collapsed" MaxWidth="650"><DockPanel><Button Content="×" DockPanel.Dock="Right" Background="Transparent" Foreground="White" Padding="14,0,0,0" Click="DismissToast_Click"/><TextBlock Text="✓" Foreground="White" FontSize="19" Margin="0,0,12,0"/><TextBlock x:Name="ToastText" Foreground="White" FontSize="16" TextWrapping="Wrap" VerticalAlignment="Center"/></DockPanel></Border>
+ </Grid>
+</Window>
+
+

@@ -1,0 +1,67 @@
+{
+  "SchemaVersion": 1,
+  "Name": "Procreate",
+  "Target": "iPad",
+  "Bindings": {
+    "A": {
+      "Action": "Redo",
+      "Shortcut": ""
+    },
+    "A.Hold": {
+      "Action": "RedoRepeat",
+      "Shortcut": ""
+    },
+    "B": {
+      "Action": "Undo",
+      "Shortcut": ""
+    },
+    "B.Hold": {
+      "Action": "UndoRepeat",
+      "Shortcut": ""
+    },
+    "X": {
+      "Action": "Brush",
+      "Shortcut": ""
+    },
+    "X.Hold": {
+      "Action": "Smudge",
+      "Shortcut": ""
+    },
+    "Y": {
+      "Action": "Eraser",
+      "Shortcut": ""
+    },
+    "Y.Hold": {
+      "Action": "TemporaryEraser",
+      "Shortcut": ""
+    },
+    "L": {
+      "Action": "Layers",
+      "Shortcut": ""
+    },
+    "ZL": {
+      "Action": "Colors",
+      "Shortcut": ""
+    },
+    "Start": {
+      "Action": "QuickMenu",
+      "Shortcut": ""
+    },
+    "DPadUp": {
+      "Action": "BrushLarger",
+      "Shortcut": ""
+    },
+    "DPadDown": {
+      "Action": "BrushSmaller",
+      "Shortcut": ""
+    },
+    "DPadLeft": {
+      "Action": "Selection",
+      "Shortcut": ""
+    },
+    "DPadRight": {
+      "Action": "Transform",
+      "Shortcut": ""
+    }
+  }
+}
